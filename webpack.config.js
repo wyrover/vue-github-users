@@ -1,27 +1,66 @@
+var path = require('path')
+var webpack = require('webpack')
+
 module.exports = {
-  // the main entry of our app
-  entry: './src/index.js',
-  // output configuration
+  entry: './src/main.js',
   output: {
-    path: __dirname + '/build/',
-    publicPath: 'build/',
+    path: path.resolve(__dirname, './dist'),
+    publicPath: '/dist/',
     filename: 'build.js'
   },
-  // how modules should be transformed
+  resolveLoader: {
+    root: path.join(__dirname, 'node_modules'),
+  },
   module: {
     loaders: [
-      // process *.vue files using vue-loader
-      { test: /\.vue$/, loader: 'vue' },
-      // process *.js files using babel-loader
-      // the exclude pattern is important so that we don't
-      // apply babel transform to all the dependencies!
-      { test: /\.js$/, loader: 'babel', exclude: /node_modules/ }
+      {
+        test: /\.vue$/,
+        loader: 'vue'
+      },
+      {
+        test: /\.js$/,
+        loader: 'babel',
+        exclude: /node_modules/
+      },
+      {
+        test: /\.json$/,
+        loader: 'json'
+      },
+      {
+        test: /\.html$/,
+        loader: 'vue-html'
+      },
+      {
+        test: /\.(png|jpg|gif|svg)$/,
+        loader: 'url',
+        query: {
+          limit: 10000,
+          name: '[name].[ext]?[hash]'
+        }
+      }
     ]
   },
-  // configure babel-loader.
-  // this also applies to the JavaScript inside *.vue files
-  babel: {
-    presets: ['es2015'],
-    plugins: ['transform-runtime']
-  }
+  devServer: {
+    historyApiFallback: true,
+    noInfo: true
+  },
+  devtool: 'eval-source-map'
+}
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports.devtool = 'source-map'
+  // http://vuejs.github.io/vue-loader/workflow/production.html
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"'
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    }),
+    new webpack.optimize.OccurenceOrderPlugin()
+  ])
 }

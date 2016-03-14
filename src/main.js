@@ -4,6 +4,8 @@ import Home from './components/Home.vue'
 import Users from './components/Users.vue'
 import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
+// require('node_modules/bootstrap/dist/css/bootstrap.min.css')
+
 Vue.use(VueResource)
 Vue.use(VueRouter)
 
@@ -22,4 +24,4 @@ router.redirect({
   '*': '/home'
 })
 
-router.start(App, '#app')
+router.start(App, 'body')
